@@ -63,6 +63,7 @@ public class KospiTh extends Thread{
                 "카카오 : " +infoKospi.get(KAKAO).price + " " +
                 "네이버 : " +infoKospi.get(NAVER).price + " " +
                 "삼성 : " +infoKospi.get(SAMSUNG).price + "\r");
+                System.out.println();
             } catch (InterruptedException e) {
                 e.printStackTrace();
                 System.out.println("파국이다~");

@@ -1,6 +1,7 @@
 package Kospi;
 
 public class KospiInfo {
+
     int unique;
     byte number; //주식갯수
     int price;

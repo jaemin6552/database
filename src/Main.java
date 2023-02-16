@@ -24,13 +24,14 @@ public class Main {
             int tmp = sc.nextInt();
             switch (tmp){
                 case 1:
-                    System.out.println("구매 : SAMSUNG = 100 LG = 101 SK = 102 AHNLAB= 103 KAKAO = 104 NAVER = 105 COUPANG = 106 AMZN = 107 HYUNDAI = 108 APPLE = 109");
+
+                    System.out.print("구매 : SAMSUNG = 100 LG = 101 SK = 102 AHNLAB= 103 KAKAO = 104 NAVER = 105 COUPANG = 106 AMZN = 107 HYUNDAI = 108 APPLE = 109\r");
                     value = sc.nextInt();
                     count = sc.nextByte();
                     userInfo.buyKOSPI(value,count,demonKospiTh);
                     break;
                 case 2:
-                    System.out.println("판매 : SAMSUNG = 100 LG = 101 SK = 102 AHNLAB= 103 KAKAO = 104 NAVER = 105 COUPANG = 106 AMZN = 107 HYUNDAI = 108 APPLE = 109");
+                    System.out.print("판매 : SAMSUNG = 100 LG = 101 SK = 102 AHNLAB= 103 KAKAO = 104 NAVER = 105 COUPANG = 106 AMZN = 107 HYUNDAI = 108 APPLE = 109\r");
                     value = sc.nextInt();
                     count = sc.nextByte();
                     userInfo.sellKOSPI(value,count,demonKospiTh);

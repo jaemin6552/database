@@ -49,10 +49,10 @@ public class UserInfo {
 
     public void getWalletInfo() {
         for(Integer key : Wallet.keySet()){
-            System.out.println("보유 주식 : " + key);
+            System.out.println("보유 주식 : " + key );
             System.out.println("보유 량 : " + Wallet.get(key).getNumber());
         }
-        System.out.println("소지금 : "+ this.money);
+        System.out.println("소지금 : "+ this.money+"\r");
     }
 
     public int getMoney() {
