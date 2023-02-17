@@ -27,7 +27,7 @@ public class UserInfo {
 
     public void buyKOSPI(int key,byte num,KospiTh kospiTh){
         int price = kospiTh.getInfoKospi().get(key).getPrice();
-        if(this.money > price) {
+        if(this.money >= price * num) {
             if (Wallet.get(key) == null) {
                 Wallet.put(key, new KospiInfo(key, num));
             }
