@@ -17,6 +17,8 @@ public class KospiTh extends Thread{
     final static Integer APPLE = 109;
     HashMap<Integer, KospiInfo> infoKospi;
 
+    int state;
+
     public HashMap<Integer, KospiInfo> getInfoKospi() {
         return infoKospi;
     }
@@ -34,11 +36,14 @@ public class KospiTh extends Thread{
         infoKospi.put(APPLE,new KospiInfo(APPLE,55000));
     }
 
+    public void setState(int state) {
+        this.state = state;
+    }
 
     @Override
     public void run() {
         int change;
-        while(true){
+        while(state == 0){
             try {
                 sleep(10000);
                 change = (int)(Math.random() * 3)+1;  //1.상승 2.하락 3.변동없음

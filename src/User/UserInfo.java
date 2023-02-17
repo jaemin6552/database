@@ -7,7 +7,7 @@ import Kospi.KospiTh;
 import java.util.HashMap;
 import java.util.List;
 
-public class UserInfo {
+public class UserInfo extends Thread{
     String id; //아이디
     String password; //비밀번호
     String num; //고유번호
@@ -57,5 +57,12 @@ public class UserInfo {
 
     public int getMoney() {
         return money;
+    }
+
+    @Override
+    public void run() {
+
+
+
     }
 }
