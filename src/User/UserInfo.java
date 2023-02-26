@@ -24,38 +24,40 @@ public class UserInfo {
         this.money = money;
         Wallet = new HashMap<>();
     }
-
-    public void buyKOSPI(int key,byte num,KospiTh kospiTh){
-        int price = kospiTh.getInfoKospi().get(key).getPrice();
-        if(this.money > price) {
-            if (Wallet.get(key) == null) {
-                Wallet.put(key, new KospiInfo(key, num));
-            }
-            else {
-                Wallet.put(key, new KospiInfo(key, Wallet.get(key).getNumber() + num));
-            }
-            this.money -=price * num;
-        } else System.out.println(" 돈이 부족합니다! 구매 불가능!! ");
-    }
-    public void sellKOSPI(int key,int num,KospiTh kospiTh){
-        int price = kospiTh.getInfoKospi().get(key).getPrice();
-        if(Wallet.get(key).getNumber() - num >= 0 ){
-            if(Wallet.get(key).getNumber() - num == 0) {
-                Wallet.remove(key);
-            } else Wallet.put(key,new KospiInfo(key,Wallet.get(key).getNumber() - num));
-            this.money += price * num;
-        } else System.out.println("판매하려는 수량을 보유하고 있지않습니다.");
-    }
-
-    public void getWalletInfo() {
-        for(Integer key : Wallet.keySet()){
-            System.out.println("보유 주식 : " + key );
-            System.out.println("보유 량 : " + Wallet.get(key).getNumber());
-        }
-        System.out.println("소지금 : "+ this.money+"\r");
-    }
-
-    public int getMoney() {
-        return money;
-    }
 }
+//    public void buyKOSPI(int key,byte num,KospiTh kospiTh){
+//        int price = kospiTh.getInfoKospi().get(key).getPrice();
+//        if(this.money > price) {
+//            if (Wallet.get(key) == null) {
+//                Wallet.put(key, new KospiInfo(key, num));
+//            }
+//            else {
+//                Wallet.put(key, new KospiInfo(key, Wallet.get(key).getNumber() + num));
+//            }
+//            this.money -=price * num;
+//        } else System.out.println(" 돈이 부족합니다! 구매 불가능!! ");
+//    }
+//    public void sellKOSPI(int key,int num,KospiTh kospiTh){
+//        int price = kospiTh.getInfoKospi().get(key).getPrice();
+//        if(Wallet.get(key).getNumber() - num >= 0 ){
+//            if(Wallet.get(key).getNumber() - num == 0) {
+//                Wallet.remove(key);
+//            } else Wallet.put(key,new KospiInfo(key,Wallet.get(key).getNumber() - num));
+//            this.money += price * num;
+//        } else System.out.println("판매하려는 수량을 보유하고 있지않습니다.");
+//    }
+//
+//    public void getWalletInfo() {
+//        for(Integer key : Wallet.keySet()){
+//            System.out.println("보유 주식 : " + key );
+//            System.out.println("보유 량 : " + Wallet.get(key).getNumber());
+//        }
+//        System.out.println("소지금 : "+ this.money+"\r");
+//    }
+//
+//    public int getMoney() {
+//        return money;
+//    }
+//
+//
+//}
