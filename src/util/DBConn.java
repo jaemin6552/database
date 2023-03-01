@@ -38,12 +38,11 @@ public class DBConn {
         if(pStmt != null && (!pStmt.isClosed())){
             pStmt.close();
             this.pStmt = null;
-            System.out.println("제거 완료");
+           // System.out.println("제거 완료");
         }
         if(dbConn != null && !dbConn.isClosed()) {
                 dbConn.close();
-                this.dbConn = null;
-                System.out.println("제거완료~");
+               // System.out.println("제거완료~");
         }
     }
     public synchronized void close( PreparedStatement pStmt, ResultSet rs) throws SQLException {

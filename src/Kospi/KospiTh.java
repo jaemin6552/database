@@ -31,12 +31,19 @@ public class KospiTh extends Thread{
             try {
                 sleep(10000);
                 change  = (int)(Math.random() * 3)+1;  //1.상승 2.하락 3.변동없음
-                double growth = Math.random()*10;
+                double growth = Math.random()/2;
+                growth = Math.floor(growth*100)/100;
                 switch(change){
-                    case 1: case 2: case 3:
-                        String tmp = myDao.getRdCospi();
-                        System.out.println(tmp);
-                        myDao.updateCospi("삼성",growth);
+                    case 1:
+                        String name =myDao.getRdID();
+                        myDao.updateCospi(name,growth);
+                        break;
+                    case 2:
+                        name =myDao.getRdID();
+                        myDao.updateCospi(name,-growth);
+                        break;
+                    case 3:
+                        System.out.println("변동없음");
                         break;
                 }
             } catch (InterruptedException e) {

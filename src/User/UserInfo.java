@@ -8,56 +8,139 @@ import java.util.HashMap;
 import java.util.List;
 
 public class UserInfo {
-    String id; //아이디
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    String id; //아이디 고유번호
+
+    public UserInfo(String id ,String password, String name, String phone, int money) {
+        this.id = id;
+        this.password = password;
+        this.name = name;
+        this.phone = phone;
+        this.money = money;
+    }
+
     String password; //비밀번호
-    String num; //고유번호
+    String name; //이름
     String phone; //핸드폰번호
 
     int money; //현금 보유량
-    HashMap<Integer, KospiInfo> Wallet; //주식 보유량
+    HashMap<String,Wallet> userWallet;
 
-    public UserInfo(String id, String password, String num, String phone, int money) {
-        this.id = id;
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
         this.password = password;
-        this.num = num;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    public int getMoney() {
+        return money;
+    }
+
+    public void setMoney(int money) {
         this.money = money;
-        Wallet = new HashMap<>();
+    }
+
+    public HashMap<String, Wallet> getUserWallet() {
+        return userWallet;
+    }
+
+    public void setUserWallet(HashMap<String, Wallet> userWallet) {
+        this.userWallet = userWallet;
     }
 }
-//    public void buyKOSPI(int key,byte num,KospiTh kospiTh){
-//        int price = kospiTh.getInfoKospi().get(key).getPrice();
-//        if(this.money > price) {
-//            if (Wallet.get(key) == null) {
-//                Wallet.put(key, new KospiInfo(key, num));
-//            }
-//            else {
-//                Wallet.put(key, new KospiInfo(key, Wallet.get(key).getNumber() + num));
-//            }
-//            this.money -=price * num;
-//        } else System.out.println(" 돈이 부족합니다! 구매 불가능!! ");
-//    }
-//    public void sellKOSPI(int key,int num,KospiTh kospiTh){
-//        int price = kospiTh.getInfoKospi().get(key).getPrice();
-//        if(Wallet.get(key).getNumber() - num >= 0 ){
-//            if(Wallet.get(key).getNumber() - num == 0) {
-//                Wallet.remove(key);
-//            } else Wallet.put(key,new KospiInfo(key,Wallet.get(key).getNumber() - num));
-//            this.money += price * num;
-//        } else System.out.println("판매하려는 수량을 보유하고 있지않습니다.");
-//    }
-//
-//    public void getWalletInfo() {
-//        for(Integer key : Wallet.keySet()){
-//            System.out.println("보유 주식 : " + key );
-//            System.out.println("보유 량 : " + Wallet.get(key).getNumber());
-//        }
-//        System.out.println("소지금 : "+ this.money+"\r");
-//    }
-//
-//    public int getMoney() {
-//        return money;
-//    }
-//
-//
-//}
+class Wallet{
+    String name; //주식이름
+    int figure; //주식 보유량
+    int totalPrice; //합계가격
+    int crc; //현재가격
+    int bought; //구매가
+
+    public Wallet(String name, int figure, int totalPrice, int crc, int bought, String buyDate, double growth) {
+        this.name = name;
+        this.figure = figure;
+        this.totalPrice = totalPrice;
+        this.crc = crc;
+        this.bought = bought;
+        this.buyDate = buyDate;
+        this.growth = growth;
+    }
+
+    public int getFigure() {
+        return figure;
+    }
+
+    public void setFigure(int figure) {
+        this.figure = figure;
+    }
+
+    public int getTotalPrice() {
+        return totalPrice;
+    }
+
+    public void setTotalPrice(int totalPrice) {
+        this.totalPrice = totalPrice;
+    }
+
+    public int getCrc() {
+        return crc;
+    }
+
+    public void setCrc(int crc) {
+        this.crc = crc;
+    }
+
+    public int getBought() {
+        return bought;
+    }
+
+    public void setBought(int bought) {
+        this.bought = bought;
+    }
+
+    public String getBuyDate() {
+        return buyDate;
+    }
+
+    public void setBuyDate(String buyDate) {
+        this.buyDate = buyDate;
+    }
+
+    public double getGrowth() {
+        return growth;
+    }
+
+    public void setGrowth(double growth) {
+        this.growth = growth;
+    }
+
+    String buyDate; //구매한날짜
+    double growth; //성장률
+
+
+}
