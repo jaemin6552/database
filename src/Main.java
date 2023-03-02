@@ -51,8 +51,10 @@ public class Main {
                     tmp = sc.nextInt();
                     switch (tmp){
                         case 1:
+                            myDao.showMyWallets(id);
                             break;
                         case 2:
+                            myDao.showCos_Info();
                             break;
                         case 3:
                             break;

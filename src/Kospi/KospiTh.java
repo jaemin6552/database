@@ -34,10 +34,10 @@ public class KospiTh extends Thread{
                 change  = (int)(Math.random() * 3)+1;  //1.상승 2.하락 3.변동없음
                 double growth = Math.random();
                 growth = Math.floor(growth*100)/100;
-                switch(1){
+                switch(change){
                     case 1:
                         String name =myDao.getRdID();
-                        myDao.updateCospi("두산",growth);
+                        myDao.updateCospi(name,growth);
                         break;
                     case 2:
                         name =myDao.getRdID();

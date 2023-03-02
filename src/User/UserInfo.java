@@ -22,6 +22,7 @@ public class UserInfo {
         this.name = name;
         this.phone = phone;
         this.money = money;
+        userWallet = new HashMap<>();
     }
 
     String password; //비밀번호
@@ -30,15 +31,12 @@ public class UserInfo {
 
     int money; //현금 보유량
 
-    public List<Wallet> getUserWallet() {
+    public HashMap<String, Wallet> getUserWallet() {
         return userWallet;
     }
 
-    public void setUserWallet(List<Wallet> userWallet) {
-        this.userWallet = userWallet;
-    }
 
-    List<Wallet> userWallet;
+    HashMap<String,Wallet> userWallet;
 
 
     public String getPassword() {
