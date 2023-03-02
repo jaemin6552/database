@@ -22,8 +22,7 @@ public class MyDao {
             pstmt = myDB.getPStmt("SELECT * FROM USER_TABLE");
             rs = pstmt.executeQuery();
             while(rs.next()){
-                userMap.put(rs.getString("USER_ID"),new UserInfo(rs.getString("USER_ID"),rs.getNString("USER_PWD"),rs.getString("USER_NAME"),rs.getString("USER_HP"),rs.getInt("MONEY") ) );
-                System.out.println(userMap.get(rs.getString("USER_ID")));
+                userMap.put(rs.getString("USER_ID"),new UserInfo(rs.getString("USER_ID"),rs.getNString("USER_PWD"),rs.getString("NAME"),rs.getString("PH"),rs.getInt("MONEY") ) );
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -81,8 +80,9 @@ public class MyDao {
             rs = pstmt.executeQuery();
             while (rs.next()) {
                 System.out.println(rs.getString("USER_ID")+ " "
-                       + rs.getString("USER_NAME")+ " "
-                       + rs.getInt("MONEY"));
+                       + rs.getString("NAME")+ " "
+                       + rs.getInt("MONEY") + " "
+                       + rs.getString("PH"));
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);

@@ -36,11 +36,11 @@ public class KospiTh extends Thread{
                 switch(change){
                     case 1:
                         String name =myDao.getRdID();
-                        myDao.updateCospi(name,growth);
+                       // myDao.updateCospi(name,growth);
                         break;
                     case 2:
                         name =myDao.getRdID();
-                        myDao.updateCospi(name,-growth);
+                       // myDao.updateCospi(name,-growth);
                         break;
                     case 3:
                         System.out.println("변동없음");
