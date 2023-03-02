@@ -12,7 +12,7 @@ public class KospiTh extends Thread{
     public static boolean isAlive = true;
     MyDao myDao;
 
-    public KospiTh() {
+    public KospiTh() throws SQLException {
 
         isAlive = true;
         try {
@@ -22,6 +22,7 @@ public class KospiTh extends Thread{
         } catch (ClassNotFoundException e) {
             System.out.println("연결실패");
         }
+
     }
 
     @Override
@@ -31,16 +32,16 @@ public class KospiTh extends Thread{
             try {
                 sleep(10000);
                 change  = (int)(Math.random() * 3)+1;  //1.상승 2.하락 3.변동없음
-                double growth = Math.random()/2;
+                double growth = Math.random();
                 growth = Math.floor(growth*100)/100;
-                switch(change){
+                switch(1){
                     case 1:
                         String name =myDao.getRdID();
-                       // myDao.updateCospi(name,growth);
+                        myDao.updateCospi("두산",growth);
                         break;
                     case 2:
                         name =myDao.getRdID();
-                       // myDao.updateCospi(name,-growth);
+                        myDao.updateCospi(name,-growth);
                         break;
                     case 3:
                         System.out.println("변동없음");

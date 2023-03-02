@@ -1,11 +1,9 @@
 package User;
 
 
-import Kospi.KospiInfo;
-import Kospi.KospiTh;
-
 import java.util.HashMap;
 import java.util.List;
+
 
 public class UserInfo {
     public String getId() {
@@ -31,7 +29,16 @@ public class UserInfo {
     String phone; //핸드폰번호
 
     int money; //현금 보유량
-    HashMap<String,Wallet> userWallet;
+
+    public List<Wallet> getUserWallet() {
+        return userWallet;
+    }
+
+    public void setUserWallet(List<Wallet> userWallet) {
+        this.userWallet = userWallet;
+    }
+
+    List<Wallet> userWallet;
 
 
     public String getPassword() {
@@ -66,13 +73,7 @@ public class UserInfo {
         this.money = money;
     }
 
-    public HashMap<String, Wallet> getUserWallet() {
-        return userWallet;
-    }
 
-    public void setUserWallet(HashMap<String, Wallet> userWallet) {
-        this.userWallet = userWallet;
-    }
 }
 class Wallet{
     String name; //주식이름
@@ -89,6 +90,14 @@ class Wallet{
         this.bought = bought;
         this.buyDate = buyDate;
         this.growth = growth;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public int getFigure() {
