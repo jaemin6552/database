@@ -53,10 +53,6 @@ public class KospiTh extends Thread{
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
-            if(isAlive){
-
-            }
-
         }
     }
 }

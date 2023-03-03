@@ -1,5 +1,8 @@
 package User;
 
+
+import Board.Board;
+import Board.Comments;
 import Kospi.CospiInfo;
 import util.DBConn;
 
@@ -15,7 +18,8 @@ public class MyDao {
     HashMap<String,UserInfo> userMap;
 
     List<String> userName;
-
+    HashMap<String,Board> boardMap;
+    HashMap<String, Comments> commentsMap;
     HashMap<String,CospiInfo> cospiMap;
 
 
@@ -27,6 +31,160 @@ public class MyDao {
         setWallet();
         setCospi();
     }
+    //////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public void insertBoard_Info(String cospi_id,String user_id,String title, String content) throws SQLException {
+        PreparedStatement pstmt = null;
+        try{
+            pstmt = myDB.getPStmt("INSERT INTO BOARD VALUES(?,?,(SELECT NVL(MAX(WRITE_NUM),0) FROM BOARD) + 1,?,?)");
+            pstmt.setString(1,cospi_id);
+            pstmt.setString(2,user_id);
+            pstmt.setString(3, title);
+            pstmt.setString(4,content);
+            pstmt.executeUpdate();
+
+        }catch (SQLException e){
+            throw new SQLException(e);
+        }
+        myDB.close(pstmt);
+    }
+
+    public void deleteBoard_Info(int write_num) throws SQLException{
+        PreparedStatement pstmt = null;
+        try{
+            pstmt = myDB.getPStmt("DELETE FROM BOARD WHERE WRITE_NUM = ?");
+            pstmt.setInt(1, write_num);
+            pstmt.executeUpdate();
+        }catch (SQLException e){
+            throw new SQLException(e);
+        }
+        myDB.close(pstmt);
+    }
+
+    public void showBoard_Info() throws SQLException{
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        try{
+            pstmt = myDB.getPStmt("SELECT * FROM BOARD");
+            //System.out.println("쿼리문 날리기직전");
+            rs = pstmt.executeQuery();
+            //System.out.println("쿼리날림");
+            while(rs.next()){
+                System.out.println(rs.getString("COSPI_ID") + " "
+                        +rs.getString("USER_ID") + " "
+                        + rs.getInt("WRITE_NUM") + " "
+                        + rs.getString("TITLE") + " "
+                        + rs.getString("CONTENT"));
+                System.out.println("값출력 보드");
+            }
+        }catch (SQLException e){
+            System.out.println("실패");
+        }
+        myDB.close(pstmt, rs);
+    }
+
+    public void showComments_Info()throws SQLException{
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        try {
+            pstmt = myDB.getPStmt("SELECT * FROM COMMENTS");
+            rs = pstmt.executeQuery();
+            while(rs.next()){
+                System.out.println(rs.getString("USER_ID") + " "
+                        + rs.getInt("WRITE_NUM") + " "
+                        + rs.getString("COMMENTS_LETTER") + " "
+                        + rs.getInt("COMMENTS_NUM"));
+            }
+        }catch (SQLException e){
+            throw new SQLException(e);
+        }
+        myDB.close(pstmt, rs);
+    }
+
+    public void insertComments_Info(String user_id, int write_num, String comments_letter)throws SQLException{
+        PreparedStatement pstmt = null;
+        try{
+            pstmt = myDB.getPStmt("INSERT INTO COMMENTS VALUES(?,?,?,(SELECT NVL(MAX(COMMENTS_NUM),0) FROM COMMENTS) + 1)");
+            pstmt.setString(1,user_id);
+            pstmt.setInt(2,write_num);
+            pstmt.setString(3,comments_letter);
+            pstmt.executeUpdate();
+        }catch (SQLException e){
+            throw new SQLException(e);
+        }
+        myDB.close(pstmt);
+    }
+
+    public void deleteComments_Info(int comments_num) throws SQLException{
+        PreparedStatement pstmt = null;
+        try{
+            pstmt = myDB.getPStmt("DELETE FROM COMMENTS WHERE COMMENTS_NUM = ?");
+            pstmt.setInt(1, comments_num);
+            pstmt.executeUpdate();
+        }catch (SQLException e){
+            throw new SQLException(e);
+        }
+        myDB.close(pstmt);
+    }
+
+    public void setComments_Info()throws SQLException{
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        try {
+            pstmt = myDB.getPStmt("SELECT * FROM COMMENTS");
+            rs = pstmt.executeQuery();
+            while (rs.next()) {
+                commentsMap.put(rs.getString("USER_ID"),new Comments(rs.getString("USER_ID"),rs.getInt("WRITE_NUM"),rs.getString("COMMENTS_LETTER"),rs.getInt("COMMENTS_NUM")));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } finally {
+            myDB.close(pstmt, rs);
+        }
+    }
+
+    public void searchBoard_Info()throws SQLException{
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        try{
+            pstmt = myDB.getPStmt("SELECT * FROM BOARD WHERE WRITE_NUM > (SELECT COUNT(WRITE_NUM) - 5 FROM BOARD)");
+            rs = pstmt.executeQuery();
+            while(rs.next()){
+                System.out.println(rs.getString("COSPI_ID") + " "
+                        + rs.getString("USER_ID") + " "
+                        + rs.getInt("WRITE_NUM") + " "
+                        + rs.getString("TITLE") + " "
+                        + rs.getString("CONTENT"));
+            }
+        }catch (SQLException e){
+            throw new RuntimeException(e);
+        }
+        myDB.close(pstmt,rs);
+    }
+
+    public void UsearchBoard_Info(String user_id)throws SQLException{
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        try{
+            pstmt = myDB.getPStmt("SELECT * FROM BOARD WHERE USER_ID = ?");
+            pstmt.setString(1, user_id);
+            rs = pstmt.executeQuery();
+            while(rs.next()){
+                System.out.println(rs.getString("COSPI_ID") + " "
+                        + rs.getString("USER_ID") + " "
+                        + rs.getInt("WRITE_NUM") + " "
+                        + rs.getString("TITLE") + " "
+                        + rs.getString("CONTENT"));
+            }
+        }catch (SQLException e){
+            throw new RuntimeException(e);
+        }
+        myDB.close(pstmt,rs);
+    }
+
+
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////
     public boolean rogIn(String user_id,String user_pwd){
         if(user_id == null) return false;
 
@@ -45,6 +203,11 @@ public class MyDao {
         return false;
     }
     public void showMyWallets(String id){
+        try {
+            setWallet();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
         System.out.println(id + "님의 주식 보유 현황");
         for(String key : userMap.get(id).getUserWallet().keySet()){
             System.out.println("주식이름 : " + userMap.get(id).getUserWallet().get(key).getName());
@@ -150,7 +313,7 @@ public class MyDao {
             myDB.close(pstmt,rs);
         }
     }
-    public synchronized void setCospi() throws SQLException {
+    public void setCospi() throws SQLException {
         PreparedStatement pstmt = null;
         ResultSet rs = null;
         try {
@@ -172,7 +335,7 @@ public class MyDao {
         }
     }
 
-    public  void showCos_Info() throws SQLException { //주식 정보 보여주는메서드
+    public void showCos_Info() throws SQLException { //주식 정보 보여주는메서드
 
         PreparedStatement pstmt = myDB.getPStmt("SELECT ROWNUM, INFO_COSPI.* FROM INFO_COSPI ");
         ResultSet rs =  pstmt.executeQuery();
@@ -207,14 +370,14 @@ public class MyDao {
     }
 
 
-    public  void updateCospi(String cosId,double growth) throws SQLException {
+    public void updateCospi(String cosId,double growth) throws SQLException {
         PreparedStatement pstmt = null;
         try {
             pstmt = myDB.getPStmt("UPDATE INFO_COSPI SET COSPI_PRICE = ?," +
                     "GROWTH_F = ?," +
                     "GROWTH_I = ?" +
                     "WHERE COSPI_ID = ?");
-            int price = cospiMap.get(cosId).getPrice() + (int)(cospiMap.get(cosId).getPrice() * growth);
+            int price = cospiMap.get(cosId).getPrice() + (int)(cospiMap.get(cosId).getPrice() * growth * 0.1);
             pstmt.setInt(1,price);
             pstmt.setDouble(2,growth);
             int tmp = price - cospiMap.get(cosId).getPrice();
@@ -224,7 +387,6 @@ public class MyDao {
 
             if(re>=1){
                 System.out.println("주식업데이트성공!");
-                setCospi();
             } else {
                 System.out.println("잘못된 값 입력입니다.");
             }
@@ -232,6 +394,7 @@ public class MyDao {
             System.out.println("업데이트실패");
         }finally {
             myDB.close(pstmt);
+            setCospi();
             updateWallet(cosId);
         }
 
@@ -239,7 +402,7 @@ public class MyDao {
 
 
     }
-    public synchronized int getRdNum() throws SQLException {
+    public int getRdNum() throws SQLException {
         PreparedStatement pstmt = null;
         ResultSet rs = null;
         int count = 0;
@@ -291,6 +454,7 @@ public class MyDao {
     }
     public void updateWallet(String cosId) throws SQLException {
         PreparedStatement pstmt = null;
+        int growth = 0;
         try {
             pstmt = myDB.getPStmt("UPDATE WALLETS SET CRC = ?," +
                     "GROWTH = ?," +
@@ -299,7 +463,7 @@ public class MyDao {
             for(int i = 0; i<userName.size(); i++) {
                     if (userMap.get(userName.get(i)).getUserWallet().containsKey(cosId)) {
                         pstmt.setInt(1, cospiMap.get(cosId).getPrice());
-                        int growth = cospiMap.get(cosId).getPrice() - userMap.get(userName.get(i)).getUserWallet().get(cosId).getBought();
+                        growth = cospiMap.get(cosId).getPrice() - userMap.get(userName.get(i)).getUserWallet().get(cosId).getBought();
                         pstmt.setInt(2, growth);
                         pstmt.setInt(3, cospiMap.get(cosId).getPrice() * userMap.get(userName.get(i)).getUserWallet().get(cosId).getFigure());
                         pstmt.setString(4, cosId);
@@ -307,10 +471,11 @@ public class MyDao {
                         pstmt.executeUpdate();
                     }
                 }
-                setWallet();
+
         } catch (SQLException e) {
             e.printStackTrace();
         }finally {
+            setWallet();
             myDB.close(pstmt);
         }
     }

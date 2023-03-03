@@ -40,7 +40,7 @@ public class Main {
                     myDao.userJoin(id,pwd,name,PH);
                     break;
                 case 4:
-                    myDao.showUser_Info();
+                    myDao.showBoard_Info();
                     break;
                 case 5:
                     System.exit(0);
