@@ -202,12 +202,10 @@ public class MyDao {
         System.out.println("없는 아이디 입니다.");
         return false;
     }
-    public void showMyWallets(String id){
-        try {
-            setWallet();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+    public void showMyWallets(String id) throws SQLException {
+        setWallet();
+        setUser_Info();
+
         System.out.println(id + "님의 주식 보유 현황");
         for(String key : userMap.get(id).getUserWallet().keySet()){
             System.out.println("주식이름 : " + userMap.get(id).getUserWallet().get(key).getName());
@@ -218,10 +216,18 @@ public class MyDao {
             System.out.println("총액 : " + userMap.get(id).getUserWallet().get(key).getTotalPrice());
             System.out.println("손익 : " + userMap.get(id).getUserWallet().get(key).getGrowth());
         }
+        System.out.println(id + "님의 소지금 : " + userMap.get(id).getMoney());
     }
     ///////////////////////////////////////////////////////////////////////////////////
     public void buyCospi(String user_id,String cospi_id,int figure) throws SQLException {
         PreparedStatement pstmt = null;
+        int buyCost = cospiMap.get(cospi_id).getPrice() * figure;
+
+        if(userMap.get(user_id).getMoney() < buyCost) {
+            System.out.println("소지금이 부족합니다.");
+            return;
+        }
+
         if(userMap.get(user_id).getUserWallet().containsKey(cospi_id)){
             try {
                 pstmt = myDB.getPStmt("UPDATE WALLETS" +
@@ -258,10 +264,12 @@ public class MyDao {
             }catch (SQLException e){
                 e.printStackTrace();
             }finally {
+                updateUser(buyCost,user_id);
+                setWallet();
                 myDB.close(pstmt);
             }
         }
-        setWallet();
+
     }
     public void sellCospi(String user_id,String cospi_id){
 
@@ -300,7 +308,15 @@ public class MyDao {
             pstmt = myDB.getPStmt("SELECT * FROM USER_TABLE");
             rs = pstmt.executeQuery();
             while(rs.next()){
-                userMap.put(rs.getString("USER_ID"),new UserInfo(rs.getString("USER_ID"),rs.getNString("USER_PWD"),rs.getString("NAME"),rs.getString("PH"),rs.getInt("MONEY") ) );
+                if(userMap.get(rs.getString("USER_ID")) != null) {
+                    if (userMap.get(rs.getString("USER_ID")).getUserWallet() != null) {
+                        userMap.put(rs.getString("USER_ID"), new UserInfo(rs.getString("USER_ID"), rs.getNString("USER_PWD"), rs.getString("NAME"), rs.getString("PH"), rs.getInt("MONEY"),
+                                userMap.get(rs.getString("USER_ID")).getUserWallet()));
+                    } else {
+                        userMap.put(rs.getString("USER_ID"), new UserInfo(rs.getString("USER_ID"), rs.getNString("USER_PWD"), rs.getString("NAME"), rs.getString("PH"), rs.getInt("MONEY"),
+                                new HashMap<>()));
+                    }
+                }
                 userName.add(rs.getString("USER_ID"));
             }
         } catch (SQLException e) {
@@ -388,7 +404,21 @@ public class MyDao {
 
     }
 
-
+    public void updateUser(int money,String user_id) throws SQLException {
+        PreparedStatement pstmt = null;
+        try {
+            pstmt = myDB.getPStmt("UPDATE USER_TABLE SET MONEY = ?" +
+                    "WHERE USER_ID = ?");
+            pstmt.setInt(1,userMap.get(user_id).getMoney() - money);
+            pstmt.setString(2,user_id);
+            pstmt.executeUpdate();
+        }catch (SQLException e){
+                e.printStackTrace();
+        }finally {
+            setUser_Info();
+            myDB.close(pstmt);
+        }
+    }
     public void updateCospi(String cosId,double growth) throws SQLException {
         PreparedStatement pstmt = null;
         try {
@@ -396,7 +426,7 @@ public class MyDao {
                     "GROWTH_F = ?," +
                     "GROWTH_I = ?" +
                     "WHERE COSPI_ID = ?");
-            int price = cospiMap.get(cosId).getPrice() + (int)(cospiMap.get(cosId).getPrice() * growth * 0.1);
+            int price = cospiMap.get(cosId).getPrice() + (int)(cospiMap.get(cosId).getPrice() * growth * 0.05);
             pstmt.setInt(1,price);
             pstmt.setDouble(2,growth);
             int tmp = price - cospiMap.get(cosId).getPrice();
