@@ -222,17 +222,20 @@ public class MyDao {
     ///////////////////////////////////////////////////////////////////////////////////
     public void buyCospi(String user_id,String cospi_id,int figure) throws SQLException {
         PreparedStatement pstmt = null;
-        ResultSet rs = null;
         if(userMap.get(user_id).getUserWallet().containsKey(cospi_id)){
             try {
                 pstmt = myDB.getPStmt("UPDATE WALLETS" +
-                        " SET FIGURE = ?,TOTAL_PRICE = (SELECT COSPI_PRICE FROM INFO_COSPI WHERE COSPI_ID = ?) * ? " +
+                        " SET FIGURE = ?,TOTAL_PRICE = (SELECT COSPI_PRICE FROM INFO_COSPI WHERE COSPI_ID = ?) * ?, GROWTH = ? " +
                         " WHERE COSPI_ID = ? AND USER_ID = ?");
-                pstmt.setInt(1,figure);
+                int count = figure + userMap.get(user_id).getUserWallet().get(cospi_id).getFigure();
+                int prevCost = userMap.get(user_id).getUserWallet().get(cospi_id).getBought() * count;
+                int nowCost = userMap.get(user_id).getUserWallet().get(cospi_id).getCrc() * count;
+                pstmt.setInt(1,count);
                 pstmt.setString(2,cospi_id);
-                pstmt.setInt(3,figure);
-                pstmt.setString(4,cospi_id);
-                pstmt.setString(5,user_id);
+                pstmt.setInt(3,count);
+                pstmt.setInt(4,nowCost - prevCost);
+                pstmt.setString(5,cospi_id);
+                pstmt.setString(6,user_id);
                 pstmt.executeUpdate();
 
             } catch (SQLException e) {
@@ -241,8 +244,24 @@ public class MyDao {
                 myDB.close(pstmt);
             }
         }else{
-            pstmt = myDB.getPStmt("INSERT INTO WALLETS VALUES(?,?,?,(SELECT COSPI_PRICE FROM INFO_COSPI WHERE COSPI_ID = ?) * ?,SYSDATE)");
+            try {
+                pstmt = myDB.getPStmt("INSERT INTO WALLETS VALUES(?,?,?,(SELECT COSPI_PRICE FROM INFO_COSPI WHERE COSPI_ID = ?) * ?,SYSDATE,?,?,?)");
+                pstmt.setString(1, user_id);
+                pstmt.setString(2, cospi_id);
+                pstmt.setInt(3, figure);
+                pstmt.setString(4, cospi_id);
+                pstmt.setInt(5, figure);
+                pstmt.setInt(6, cospiMap.get(cospi_id).getPrice());
+                pstmt.setInt(7, cospiMap.get(cospi_id).getPrice());
+                pstmt.setInt(8, 0);
+                pstmt.executeUpdate();
+            }catch (SQLException e){
+                e.printStackTrace();
+            }finally {
+                myDB.close(pstmt);
+            }
         }
+        setWallet();
     }
     public void sellCospi(String user_id,String cospi_id){
 
@@ -385,11 +404,6 @@ public class MyDao {
             pstmt.setString(4,cosId);
             int re = pstmt.executeUpdate();
 
-            if(re>=1){
-                System.out.println("주식업데이트성공!");
-            } else {
-                System.out.println("잘못된 값 입력입니다.");
-            }
         } catch (SQLException e) {
             System.out.println("업데이트실패");
         }finally {

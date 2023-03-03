@@ -48,6 +48,8 @@ public class Main {
             if(myDao.rogIn(id,pwd)){
                 while (myDao.rogIn(id,pwd)){
                     System.out.println("1.내 주식정보 확인 2.주식 가격 확인 3.구매 4.판매 5.게시판 6.로그아웃 7.종료");
+                    String cos_id = null;
+                    int figure = 0;
                     tmp = sc.nextInt();
                     switch (tmp){
                         case 1:
@@ -57,6 +59,10 @@ public class Main {
                             myDao.showCos_Info();
                             break;
                         case 3:
+                             System.out.print("사려는 주식이름,갯수 순서대로 입력 : ");
+                             cos_id = sc.next();
+                             figure = sc.nextInt();
+                            myDao.buyCospi(id,cos_id,figure);
                             break;
                         case 4:
                             break;
