@@ -28,8 +28,8 @@ public class MyDao {
         cospiMap = new HashMap<>();
         userName = new ArrayList<>();
         setUser_Info();
-        setWallet();
         setCospi();
+        setWallet();
     }
     //////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -308,17 +308,27 @@ public class MyDao {
             pstmt = myDB.getPStmt("SELECT * FROM USER_TABLE");
             rs = pstmt.executeQuery();
             while(rs.next()){
-                if(userMap.get(rs.getString("USER_ID")) != null) {
-                    if (userMap.get(rs.getString("USER_ID")).getUserWallet() != null) {
-                        userMap.put(rs.getString("USER_ID"), new UserInfo(rs.getString("USER_ID"), rs.getNString("USER_PWD"), rs.getString("NAME"), rs.getString("PH"), rs.getInt("MONEY"),
-                                userMap.get(rs.getString("USER_ID")).getUserWallet()));
-                    } else {
-                        userMap.put(rs.getString("USER_ID"), new UserInfo(rs.getString("USER_ID"), rs.getNString("USER_PWD"), rs.getString("NAME"), rs.getString("PH"), rs.getInt("MONEY"),
-                                new HashMap<>()));
-                    }
+                if(userMap.containsKey(rs.getString("USER_ID"))) {
+                    userMap.put(rs.getString("USER_ID"),
+                            new UserInfo(rs.getString("USER_ID"),
+                                    rs.getNString("USER_PWD"),
+                                    rs.getString("NAME"),
+                                    rs.getString("PH"),
+                                    rs.getInt("MONEY"),
+                                    userMap.get(rs.getString("USER_ID")).getUserWallet()));
+                    }else {
+                    userMap.put(rs.getString("USER_ID"),
+                            new UserInfo(rs.getString("USER_ID"),
+                                    rs.getNString("USER_PWD"),
+                                    rs.getString("NAME"),
+                                    rs.getString("PH"),
+                                    rs.getInt("MONEY"),
+                                    new HashMap<>()));
                 }
                 userName.add(rs.getString("USER_ID"));
             }
+
+
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }finally {
