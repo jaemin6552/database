@@ -215,6 +215,7 @@ public class MyDao {
             System.out.println("평단가 : " + userMap.get(id).getUserWallet().get(key).getBought());
             System.out.println("총액 : " + userMap.get(id).getUserWallet().get(key).getTotalPrice());
             System.out.println("손익 : " + userMap.get(id).getUserWallet().get(key).getGrowth());
+            System.out.println("================================================================");
         }
         System.out.println(id + "님의 소지금 : " + userMap.get(id).getMoney());
     }
@@ -231,17 +232,21 @@ public class MyDao {
         if(userMap.get(user_id).getUserWallet().containsKey(cospi_id)){
             try {
                 pstmt = myDB.getPStmt("UPDATE WALLETS" +
-                        " SET FIGURE = ?,TOTAL_PRICE = (SELECT COSPI_PRICE FROM INFO_COSPI WHERE COSPI_ID = ?) * ?, GROWTH = ? " +
+                        " SET FIGURE = ?,TOTAL_PRICE = (SELECT COSPI_PRICE FROM INFO_COSPI WHERE COSPI_ID = ?) * ?, " +
+                        "GROWTH = ?, BOUGHT = ?, BUY_DATE = SYSDATE " +
                         " WHERE COSPI_ID = ? AND USER_ID = ?");
                 int count = figure + userMap.get(user_id).getUserWallet().get(cospi_id).getFigure();
                 int prevCost = userMap.get(user_id).getUserWallet().get(cospi_id).getBought() * count;
                 int nowCost = userMap.get(user_id).getUserWallet().get(cospi_id).getCrc() * count;
+                int benefit = ((userMap.get(user_id).getUserWallet().get(cospi_id).getBought() * userMap.get(user_id).getUserWallet().get(cospi_id).getFigure()) +
+                        (cospiMap.get(cospi_id).getPrice() * figure )) / count;
                 pstmt.setInt(1,count);
                 pstmt.setString(2,cospi_id);
                 pstmt.setInt(3,count);
                 pstmt.setInt(4,nowCost - prevCost);
-                pstmt.setString(5,cospi_id);
-                pstmt.setString(6,user_id);
+                pstmt.setInt(5,benefit);
+                pstmt.setString(6,cospi_id);
+                pstmt.setString(7,user_id);
                 pstmt.executeUpdate();
 
             } catch (SQLException e) {
@@ -251,7 +256,7 @@ public class MyDao {
             }
         }else{
             try {
-                pstmt = myDB.getPStmt("INSERT INTO WALLETS VALUES(?,?,?,(SELECT COSPI_PRICE FROM INFO_COSPI WHERE COSPI_ID = ?) * ?,SYSDATE,?,?,?)");
+                pstmt = myDB.getPStmt("INSERT INTO WALLETS VALUES(?,?,?,SYSDATE,(SELECT COSPI_PRICE FROM INFO_COSPI WHERE COSPI_ID = ?) * ?,?,?,?)");
                 pstmt.setString(1, user_id);
                 pstmt.setString(2, cospi_id);
                 pstmt.setInt(3, figure);
@@ -261,17 +266,59 @@ public class MyDao {
                 pstmt.setInt(7, cospiMap.get(cospi_id).getPrice());
                 pstmt.setInt(8, 0);
                 pstmt.executeUpdate();
+
             }catch (SQLException e){
                 e.printStackTrace();
             }finally {
-                updateUser(buyCost,user_id);
-                setWallet();
                 myDB.close(pstmt);
             }
         }
-
+        setWallet();
+        updateUser(buyCost,user_id);
     }
-    public void sellCospi(String user_id,String cospi_id){
+    public void sellCospi(String user_id,String cospi_id,int figure) throws SQLException {
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        int sellCost = cospiMap.get(cospi_id).getPrice() * figure;
+        if(!userMap.get(user_id).getUserWallet().containsKey(cospi_id)){
+            System.out.println("보유하지않은 주식입니다.");
+            return;
+        }
+        if(userMap.get(user_id).getUserWallet().get(cospi_id).getFigure() < figure){
+            System.out.println("보유주식이 부족합니다.");
+            return;
+        } else if(userMap.get(user_id).getUserWallet().get(cospi_id).getFigure() == figure){
+            try {
+                pstmt = myDB.getPStmt("DELETE FROM WALLETS " +
+                       " WHERE USER_ID = ? AND COSPI_ID = ?");
+                pstmt.setString(1,user_id);
+                pstmt.setString(2,cospi_id);
+                userMap.get(user_id).getUserWallet().remove(cospi_id);
+                pstmt.executeUpdate();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }finally {
+                myDB.close(pstmt);
+            }
+        } else{
+            try {
+                int rest = userMap.get(user_id).getUserWallet().get(cospi_id).getFigure() - figure;
+                pstmt = myDB.getPStmt("UPDATE WALLETS " +
+                        "SET FIGURE = ?" +
+                        "WHERE USER_ID = ? AND COSPI_ID = ?");
+                pstmt.setInt(1,rest);
+                pstmt.setString(2,user_id);
+                pstmt.setString(3,cospi_id);
+                pstmt.executeUpdate();
+
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }finally {
+                myDB.close(pstmt);
+            }
+        }
+        setWallet();
+        updateUser(-sellCost,user_id);
 
     }
     //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -296,9 +343,8 @@ public class MyDao {
             throw new RuntimeException(e);
         }finally {
             myDB.close(pstmt);
-            setUser_Info();
         }
-
+        setUser_Info();
         return true;
     }
     public void setUser_Info() throws SQLException {
@@ -448,12 +494,9 @@ public class MyDao {
             System.out.println("업데이트실패");
         }finally {
             myDB.close(pstmt);
-            setCospi();
-            updateWallet(cosId);
         }
-
-
-
+        setCospi();
+        updateWallet(cosId);
 
     }
     public int getRdNum() throws SQLException {
@@ -529,9 +572,10 @@ public class MyDao {
         } catch (SQLException e) {
             e.printStackTrace();
         }finally {
-            setWallet();
+
             myDB.close(pstmt);
         }
+        setWallet();
     }
 
 

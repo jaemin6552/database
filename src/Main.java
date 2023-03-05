@@ -65,6 +65,10 @@ public class Main {
                             myDao.buyCospi(id,cos_id,figure);
                             break;
                         case 4:
+                            System.out.print("팔려는 주식이름,갯수 순서대로 입력 : ");
+                            cos_id = sc.next();
+                            figure = sc.nextInt();
+                            myDao.sellCospi(id,cos_id,figure);
                             break;
                         case 5:
                             break;

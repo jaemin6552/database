@@ -44,7 +44,6 @@ public class KospiTh extends Thread{
                         myDao.updateCospi(name,-growth);
                         break;
                     case 3:
-                        System.out.println("변동없음");
                         break;
                 }
             } catch (InterruptedException e) {
