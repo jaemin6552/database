@@ -25,7 +25,9 @@ public class Main {
             int tmp = sc.nextInt();
             switch (tmp){
                 case 1:
+                    System.out.print("아이디 : ");
                     id = sc.next();
+                    System.out.print("비밀번호 : ");
                     pwd = sc.next();
                     break;
                 case 2:
@@ -59,9 +61,9 @@ public class Main {
                             myDao.showCos_Info();
                             break;
                         case 3:
-                             System.out.print("사려는 주식이름,갯수 순서대로 입력 : ");
-                             cos_id = sc.next();
-                             figure = sc.nextInt();
+                            System.out.print("사려는 주식이름,갯수 순서대로 입력 : ");
+                            cos_id = sc.next();
+                            figure = sc.nextInt();
                             myDao.buyCospi(id,cos_id,figure);
                             break;
                         case 4:
@@ -71,6 +73,53 @@ public class Main {
                             myDao.sellCospi(id,cos_id,figure);
                             break;
                         case 5:
+                            System.out.println("1.게시판 보기 2.게시판 검색 3.글쓰기 4.글삭제 5.댓글 쓰기 6.댓글 삭제 7.댓글 확인" );
+                            int sel = sc.nextInt();
+                            switch(sel){
+                                case 1:
+                                    myDao.showBoard_Info();
+                                    break;
+                                case 2:
+                                    System.out.print("검색할 id : ");
+                                    String name = sc.next();
+                                    myDao.UsearchBoard_Info(name);
+                                    break;
+                                case 3:
+                                    System.out.print("cospi_id : ");
+                                    String cospi_id = sc.next();
+                                    System.out.print("user_id : ");
+                                    String user_id = sc.next();
+                                    System.out.print("제목 : ");
+                                    String title = sc.next();
+                                    System.out.print("게시글 : ");
+                                    String content = sc.next();
+                                    myDao.insertBoard_Info(cospi_id, user_id, title, content);
+                                    break;
+                                case 4:
+                                    System.out.print("삭제할 글 번호 : ");
+                                    int write_num = sc.nextInt();
+                                    myDao.deleteBoard_Info(write_num);
+                                    break;
+                                case 5:
+                                    System.out.println("댓글 달기");
+                                    System.out.print("user_id : ");
+                                    String user_id1 = sc.next();
+                                    System.out.print("글 번호 : ");
+                                    int write_num1 = sc.nextInt();
+                                    System.out.print("댓글 : ");
+                                    String comments_letter = sc.next();
+                                    myDao.insertComments_Info(user_id1, write_num1, comments_letter);
+                                    break;
+                                case 6:
+                                    System.out.println("댓글 삭제");
+                                    System.out.print("삭제할 댓글 번호 : ");
+                                    int comments_num = sc.nextInt();
+                                    myDao.deleteComments_Info(comments_num);
+                                    break;
+                                case 7:
+                                    myDao.showComments_Info();
+                                    break;
+                            }
                             break;
                         case 6:
                             id = null;

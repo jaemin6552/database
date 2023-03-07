@@ -75,7 +75,6 @@ public class MyDao {
                         + rs.getInt("WRITE_NUM") + " "
                         + rs.getString("TITLE") + " "
                         + rs.getString("CONTENT"));
-                System.out.println("값출력 보드");
             }
         }catch (SQLException e){
             System.out.println("실패");
@@ -191,7 +190,6 @@ public class MyDao {
             for (int i = 0; i < userName.size(); i++) {
                 if (user_id.equals(userName.get(i))) {
                     if (user_pwd.equals(userMap.get(userName.get(i)).getPassword())) {
-                        System.out.println("로그인성공");
                         return true;
                     }
                     System.out.println("비밀번호가 올바르지 않습니다.");
@@ -256,7 +254,7 @@ public class MyDao {
             }
         }else{
             try {
-                pstmt = myDB.getPStmt("INSERT INTO WALLETS VALUES(?,?,?,SYSDATE,(SELECT COSPI_PRICE FROM INFO_COSPI WHERE COSPI_ID = ?) * ?,?,?,?)");
+                pstmt = myDB.getPStmt("INSERT INTO WALLETS VALUES(?,?,?,(SELECT COSPI_PRICE FROM INFO_COSPI WHERE COSPI_ID = ?) * ?,SYSDATE,?,?,?)");
                 pstmt.setString(1, user_id);
                 pstmt.setString(2, cospi_id);
                 pstmt.setInt(3, figure);
